@@ -446,7 +446,6 @@
             }
         }
         
-        /* sweet extra animation for submit feedback */
         .shake-input {
             animation: shakeAnim 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -458,7 +457,6 @@
             100% { transform: translateX(0); }
         }
         
-        /* success toast */
         .toast-msg {
             position: fixed;
             bottom: 30px;
@@ -545,7 +543,6 @@
 </div>
 
 <script>
-    // === DAFTAR PERTANYAAN YANG LEBIH DEKAT & MANIS ===
     const pertanyaanOri = [
         "kalau lagi capek biasanya kamu ngapain biar balik enak lagi?",
         "kamu lebih suka suasana yang rame atau yang tenang gitu?",
@@ -561,9 +558,7 @@
     const dynamicContainer = document.getElementById('dynamicContent');
     const resultListDiv = document.getElementById('resultList');
 
-    // === FUNGSI KIRIM EMAIL (SEPERTI YANG DIMINTA) ===
     function kirimEmail() {
-        // Cek apakah ada jawaban sama sekali
         if (Object.keys(jawabanLea).length === 0) {
             showToast("Belum ada jawaban nih, jawab dulu yaa 💌", false);
             return;
@@ -577,16 +572,13 @@
         
         const email = "pasyaputranto12@gmail.com";
         const subject = "Jawaban Lea 💌";
-        
-        // Membuka email client
+
         window.location.href = 
             `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(hasil)}`;
-        
-        // Kasih notifikasi bahwa email client akan terbuka
-        showToast("Membuka email... kirim ya Lea 💖", true);
+ 
+        showToast("Membuka email... kirim ya Lea", true);
     }
-    
-    // === UTILITY: FLOATING BUBBLES ===
+
     function createBubbles() {
         const bubblesDiv = document.getElementById('bubbles');
         for (let i = 0; i < 22; i++) {
@@ -603,7 +595,6 @@
         }
     }
 
-    // === CONFETTI HAPPY ===
     function createConfetti() {
         for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
@@ -618,7 +609,6 @@
         }
     }
     
-    // === TOAST NOTIFICATION ===
     function showToast(message, isSuccess = true) {
         const toast = document.createElement('div');
         toast.className = 'toast-msg';
@@ -627,7 +617,6 @@
         setTimeout(() => toast.remove(), 2000);
     }
 
-    // === LOCALSTORAGE ===
     function saveToLocalStorage() {
         const data = {
             sisaPertanyaan: sisaPertanyaan,
@@ -651,7 +640,6 @@
         return false;
     }
 
-    // === RESET SEMUA ===
     function resetQuiz() {
         sisaPertanyaan = [...pertanyaanOri];
         jawabanLea = {};
@@ -692,7 +680,6 @@
         });
     }
 
-    // === RENDER PERTANYAAN ACAK (ANIMASI) ===
     function renderCurrentQuestion() {
         // kondisi jika semua pertanyaan sudah dijawab
         if (sisaPertanyaan.length === 0) {
@@ -705,7 +692,7 @@
                         kamu hebat banget! <span style="display: inline-block; animation: heartbeat 0.8s infinite;">❤️</span>
                     </div>
                 </div>
-                <div class="counter-info" style="margin-top:8px;">✅ semua pertanyaan selesai! klik "kirim ke Pasya" untuk mengirim jawaban 📧</div>
+                <div class="counter-info" style="margin-top:8px;">✅ setelah semuanya selesai dijawab! klik "kirim ke Pasya" buat ngirim jawabannya ya lea 📧</div>
             `;
             createConfetti();
             return;
@@ -777,7 +764,6 @@
         inputField.focus();
     }
 
-    // === INITIAL LOADING & PERSISTENSI ===
     createBubbles();
     
     const hasSaved = loadFromLocalStorage();
@@ -795,7 +781,6 @@
         }
     }
     
-    // event listener reset
     const resetBtn = document.getElementById('resetBtn');
     if (resetBtn) {
         resetBtn.addEventListener('click', function() {
@@ -805,16 +790,14 @@
         });
     }
     
-    // event listener untuk tombol kirim email (menggunakan fungsi kirimEmail yang diminta)
     const sendEmailBtn = document.getElementById('sendEmailBtn');
     if (sendEmailBtn) {
         sendEmailBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            kirimEmail();  // fungsi yang sudah didefinisikan sesuai permintaan
+            kirimEmail();
         });
     }
-    
-    // tambahan gaya untuk tombol email
+
     const styleAdd = document.createElement('style');
     styleAdd.textContent = `
         .shake-input {
@@ -852,12 +835,11 @@
     `;
     document.head.appendChild(styleAdd);
     
-    // jika di awal load sudah completed, tambahkan confetti
     if (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === pertanyaanOri.length) {
         setTimeout(() => createConfetti(), 200);
     }
     
-    console.log("💖 siap untuk Lea dari Pasya! Email: pasyaputranto12@gmail.com");
+    console.log("pasyaputranto12@gmail.com");
 </script>
 </body>
 </html>
