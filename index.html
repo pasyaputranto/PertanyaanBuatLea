@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Pertanyaan buat lea ✨</title>
+    <title>Pertanyaan buat lea ✨ | Pasya untuk Lea</title>
     <style>
         * {
             margin: 0;
@@ -396,6 +396,24 @@
         .button-wrapper {
             text-align: center;
             margin-top: 1rem;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .email-btn {
+            background: linear-gradient(135deg, #7faa92 0%, #6d8f7f 100%);
+            margin-top: 1rem;
+            width: auto;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .email-btn:hover {
+            transform: scale(0.98);
+            box-shadow: 0 5px 12px rgba(109, 143, 127, 0.4);
         }
 
         /* loading animation */
@@ -427,11 +445,76 @@
                 opacity: 0;
             }
         }
+        
+        /* sweet extra animation for submit feedback */
+        .shake-input {
+            animation: shakeAnim 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        
+        @keyframes shakeAnim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+        
+        /* success toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f3b462;
+            color: #2c221b;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            z-index: 2000;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            background: rgba(243, 180, 98, 0.95);
+            white-space: nowrap;
+            font-family: inherit;
+            pointer-events: none;
+            animation: toastPop 2s ease forwards;
+        }
+        
+        @keyframes toastPop {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); visibility: hidden; }
+        }
+        
+        /* responsive */
+        @media (max-width: 550px) {
+            .card {
+                border-radius: 1.5rem;
+            }
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+            .question-text {
+                font-size: 1.15rem;
+            }
+            .chat-area, .result-section {
+                padding-left: 1.2rem;
+                padding-right: 1.2rem;
+            }
+            .button-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .email-btn, .reset-btn {
+                width: auto;
+                min-width: 140px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<!-- floating bubbles -->
 <div id="bubbles"></div>
 
 <div class="card">
@@ -455,12 +538,14 @@
         </div>
         <div class="button-wrapper">
             <button id="resetBtn" class="reset-btn">↻ mulai ulang</button>
+            <button id="sendEmailBtn" class="email-btn">📧 kirim ke Pasya</button>
         </div>
     </div>
     <footer>buat kamu · dari Pasya <span class="heart-beat">💖</span></footer>
 </div>
 
 <script>
+    // === DAFTAR PERTANYAAN YANG LEBIH DEKAT & MANIS ===
     const pertanyaanOri = [
         "kalau lagi capek biasanya kamu ngapain biar balik enak lagi?",
         "kamu lebih suka suasana yang rame atau yang tenang gitu?",
@@ -476,9 +561,35 @@
     const dynamicContainer = document.getElementById('dynamicContent');
     const resultListDiv = document.getElementById('resultList');
 
+    // === FUNGSI KIRIM EMAIL (SEPERTI YANG DIMINTA) ===
+    function kirimEmail() {
+        // Cek apakah ada jawaban sama sekali
+        if (Object.keys(jawabanLea).length === 0) {
+            showToast("Belum ada jawaban nih, jawab dulu yaa 💌", false);
+            return;
+        }
+        
+        let hasil = "Jawaban Lea:\n\n";
+        for (let [q, a] of Object.entries(jawabanLea)) {
+            hasil += `• ${q}\n👉 ${a}\n\n`;
+        }
+        hasil += "✨ — terima kasih Lea! — ✨";
+        
+        const email = "pasyaputranto12@gmail.com";
+        const subject = "Jawaban Lea 💌";
+        
+        // Membuka email client
+        window.location.href = 
+            `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(hasil)}`;
+        
+        // Kasih notifikasi bahwa email client akan terbuka
+        showToast("Membuka email... kirim ya Lea 💖", true);
+    }
+    
+    // === UTILITY: FLOATING BUBBLES ===
     function createBubbles() {
         const bubblesDiv = document.getElementById('bubbles');
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 22; i++) {
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
             const size = Math.random() * 60 + 20;
@@ -487,152 +598,266 @@
             bubble.style.left = Math.random() * 100 + '%';
             bubble.style.animationDelay = Math.random() * 8 + 's';
             bubble.style.animationDuration = Math.random() * 5 + 6 + 's';
+            bubble.style.opacity = Math.random() * 0.4 + 0.2;
             bubblesDiv.appendChild(bubble);
         }
     }
 
+    // === CONFETTI HAPPY ===
     function createConfetti() {
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
             confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = `hsl(${Math.random() * 60 + 20}, 70%, 60%)`;
-            confetti.style.width = Math.random() * 8 + 4 + 'px';
+            confetti.style.background = `hsl(${Math.random() * 60 + 20}, 75%, 60%)`;
+            confetti.style.width = Math.random() * 10 + 4 + 'px';
             confetti.style.height = Math.random() * 8 + 4 + 'px';
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            confetti.style.animationDelay = Math.random() * 0.6 + 's';
             document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
+            setTimeout(() => confetti.remove(), 2800);
         }
     }
+    
+    // === TOAST NOTIFICATION ===
+    function showToast(message, isSuccess = true) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = isSuccess ? `✨ ${message} ✨` : `💭 ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
 
+    // === LOCALSTORAGE ===
     function saveToLocalStorage() {
-        localStorage.setItem('leaQuizData', JSON.stringify({
-            sisaPertanyaan,
-            jawabanLea
-        }));
+        const data = {
+            sisaPertanyaan: sisaPertanyaan,
+            jawabanLea: jawabanLea
+        };
+        localStorage.setItem('leaQuizData', JSON.stringify(data));
     }
 
     function loadFromLocalStorage() {
         const saved = localStorage.getItem('leaQuizData');
-        if (!saved) return false;
-        try {
-            const data = JSON.parse(saved);
-            sisaPertanyaan = data.sisaPertanyaan;
-            jawabanLea = data.jawabanLea;
-            return true;
-        } catch {
-            return false;
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (data.sisaPertanyaan && Array.isArray(data.sisaPertanyaan) && data.jawabanLea && typeof data.jawabanLea === 'object') {
+                    sisaPertanyaan = data.sisaPertanyaan;
+                    jawabanLea = data.jawabanLea;
+                    return true;
+                }
+            } catch(e) { }
         }
+        return false;
     }
 
+    // === RESET SEMUA ===
     function resetQuiz() {
         sisaPertanyaan = [...pertanyaanOri];
         jawabanLea = {};
         localStorage.removeItem('leaQuizData');
         updateResultDisplay();
         renderCurrentQuestion();
+        showToast("Mulai dari awal yaa 🎀", true);
+        document.querySelector('.chat-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // === UPDATE DISPLAY JAWABAN ===
     function updateResultDisplay() {
         const entries = Object.entries(jawabanLea);
         if (entries.length === 0) {
-            resultListDiv.innerHTML = '<div class="empty-message">💭 kamu belum jawab nih, nanti muncul di sini yaa ✨</div>';
+            resultListDiv.innerHTML = '<div class="empty-message">💭 kamu belum jawab nih, saat udah jawab nanti bakal muncul dibawahhh!!~</div>';
             return;
         }
 
-        resultListDiv.innerHTML = entries.map(([q,a]) => `
-            <div class="result-item">
-                <div class="result-q">📌 ${escapeHtml(q)}</div>
-                <div class="result-a">💬 ${escapeHtml(a)}</div>
-            </div>
-        `).join('');
+        let html = '';
+        for (let [pertanyaan, jawaban] of entries) {
+            html += `
+                <div class="result-item">
+                    <div class="result-q">📌 ${escapeHtml(pertanyaan)}</div>
+                    <div class="result-a">💬 ${escapeHtml(jawaban)}</div>
+                </div>
+            `;
+        }
+        resultListDiv.innerHTML = html;
     }
 
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, m =>
-            m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'
-        );
-    }
-
-    // ✅ FITUR BARU: kirim email
-    function kirimEmail() {
-        let hasil = "Jawaban Lea:\n\n";
-        for (let [q, a] of Object.entries(jawabanLea)) {
-            hasil += `• ${q}\n👉 ${a}\n\n`;
-        }
-
-        const email = "pasyaputranto12@gmail.com";
-        const subject = "Jawaban Lea 💌";
-
-        window.location.href =
-            `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(hasil)}`;
-    }
-
-    function renderCurrentQuestion() {
-        if (sisaPertanyaan.length === 0) {
-            dynamicContainer.innerHTML = `
-                <div class="question-box" style="background:#eef6f0;">
-                    <div class="question-text">
-                        makasih Lea udah jawab semuanya 💖
-                    </div>
-                </div>
-            `;
-
-            createConfetti();
-
-            // ✅ AUTO EMAIL
-            setTimeout(() => {
-                kirimEmail();
-            }, 1500);
-
-            return;
-        }
-
-        const index = Math.floor(Math.random() * sisaPertanyaan.length);
-        const q = sisaPertanyaan[index];
-
-        dynamicContainer.innerHTML = `
-            <div class="question-box">
-                <div class="question-text">${escapeHtml(q)}</div>
-            </div>
-            <input id="jawabanInput" placeholder="jawab di sini...">
-            <button id="submitBtn">kirim</button>
-        `;
-
-        const input = document.getElementById('jawabanInput');
-        const btn = document.getElementById('submitBtn');
-
-        function submit() {
-            const val = input.value.trim();
-            if (!val) return alert("isi dulu ya 😊");
-
-            jawabanLea[q] = val;
-            sisaPertanyaan.splice(index, 1);
-
-            saveToLocalStorage();
-            updateResultDisplay();
-            renderCurrentQuestion();
-        }
-
-        btn.onclick = submit;
-        input.addEventListener("keypress", e => {
-            if (e.key === "Enter") submit();
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
     }
 
-    createBubbles();
+    // === RENDER PERTANYAAN ACAK (ANIMASI) ===
+    function renderCurrentQuestion() {
+        // kondisi jika semua pertanyaan sudah dijawab
+        if (sisaPertanyaan.length === 0) {
+            dynamicContainer.innerHTML = `
+                <div class="question-box" style="background:#eef6f0; border-left-color:#8fbc8f; animation: none;">
+                    <div class="pasya-label" style="animation: none;">✨ Pasya ✨</div>
+                    <div class="question-text">
+                        makasih Lea udah jawab semua pertanyaan dari aku! 💖<br>
+                        <span style="font-size: 1.2rem; display: inline-block; animation: wave 1s infinite;">🎉</span>
+                        kamu hebat banget! <span style="display: inline-block; animation: heartbeat 0.8s infinite;">❤️</span>
+                    </div>
+                </div>
+                <div class="counter-info" style="margin-top:8px;">✅ semua pertanyaan selesai! klik "kirim ke Pasya" untuk mengirim jawaban 📧</div>
+            `;
+            createConfetti();
+            return;
+        }
 
-    if (!loadFromLocalStorage()) {
-        resetQuiz();
-    } else {
-        updateResultDisplay();
-        renderCurrentQuestion();
+        // ambil pertanyaan secara acak dari sisa
+        const randomIndex = Math.floor(Math.random() * sisaPertanyaan.length);
+        const currentQ = sisaPertanyaan[randomIndex];
+        const currentIndex = randomIndex;
+
+        dynamicContainer.innerHTML = `
+            <div class="question-box">
+                <div class="pasya-label">🐱 Pasya nanya nih <span class="typing-indicator">✍️</span></div>
+                <div class="question-text">${escapeHtml(currentQ)}</div>
+            </div>
+            <div class="answer-area">
+                <label class="lea-label">💌 Lea jawab :</label>
+                <input type="text" id="jawabanInput" placeholder="ketik jawabanmu di sini..." autocomplete="off">
+            </div>
+            <button id="submitBtn">
+                <span>kirim jawaban</span> 
+                <span style="display: inline-block; animation: wave 1s infinite;">➤</span>
+            </button>
+            <div class="counter-info">
+                💬 tersisa ${sisaPertanyaan.length} pertanyaan lagi
+                ${sisaPertanyaan.length <= 2 ? '✨ semangat! ✨' : '🥰'}
+            </div>
+        `;
+
+        const submitBtn = document.getElementById('submitBtn');
+        const inputField = document.getElementById('jawabanInput');
+
+        function handleAnswer() {
+            let jawaban = inputField.value.trim();
+            if (jawaban === "") {
+                inputField.classList.add('shake-input');
+                setTimeout(() => inputField.classList.remove('shake-input'), 400);
+                showToast("Tulis dulu jawabannya ya 😊", false);
+                return;
+            }
+
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '✅ tersimpan! 💖';
+            submitBtn.style.transform = 'scale(0.96)';
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.style.transform = '';
+            }, 500);
+
+            jawabanLea[currentQ] = jawaban;
+            sisaPertanyaan.splice(currentIndex, 1);
+            saveToLocalStorage();
+            updateResultDisplay();
+            
+            showToast(`Jawaban tersimpan! ${sisaPertanyaan.length > 0 ? 'lanjut yuk ✨' : 'selesaiii! 🎉'}`, true);
+            
+            renderCurrentQuestion();
+            document.querySelector('.chat-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        submitBtn.addEventListener('click', handleAnswer);
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAnswer();
+            }
+        });
+        inputField.focus();
     }
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        if (confirm('Yakin mau mulai ulang?')) resetQuiz();
-    });
+    // === INITIAL LOADING & PERSISTENSI ===
+    createBubbles();
+    
+    const hasSaved = loadFromLocalStorage();
+    if (!hasSaved || (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === 0)) {
+        resetQuiz();
+    } else {
+        if (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === pertanyaanOri.length) {
+            updateResultDisplay();
+            renderCurrentQuestion();
+        } else if (sisaPertanyaan.length > 0 || Object.keys(jawabanLea).length > 0) {
+            updateResultDisplay();
+            renderCurrentQuestion();
+        } else {
+            resetQuiz();
+        }
+    }
+    
+    // event listener reset
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Yakin mau mulai ulang? Jawaban yang udah diketik akan hilang 😢')) {
+                resetQuiz();
+            }
+        });
+    }
+    
+    // event listener untuk tombol kirim email (menggunakan fungsi kirimEmail yang diminta)
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            kirimEmail();  // fungsi yang sudah didefinisikan sesuai permintaan
+        });
+    }
+    
+    // tambahan gaya untuk tombol email
+    const styleAdd = document.createElement('style');
+    styleAdd.textContent = `
+        .shake-input {
+            animation: shakeAnim 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes shakeAnim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+        input, button {
+            transition: all 0.25s ease;
+        }
+        .email-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .email-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        .email-btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+    `;
+    document.head.appendChild(styleAdd);
+    
+    // jika di awal load sudah completed, tambahkan confetti
+    if (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === pertanyaanOri.length) {
+        setTimeout(() => createConfetti(), 200);
+    }
+    
+    console.log("💖 siap untuk Lea dari Pasya! Email: pasyaputranto12@gmail.com");
 </script>
 </body>
 </html>
