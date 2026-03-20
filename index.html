@@ -476,7 +476,6 @@
     const dynamicContainer = document.getElementById('dynamicContent');
     const resultListDiv = document.getElementById('resultList');
 
-    // create floating bubbles
     function createBubbles() {
         const bubblesDiv = document.getElementById('bubbles');
         for (let i = 0; i < 20; i++) {
@@ -492,7 +491,6 @@
         }
     }
 
-    // create confetti effect
     function createConfetti() {
         for (let i = 0; i < 50; i++) {
             const confetti = document.createElement('div');
@@ -503,34 +501,28 @@
             confetti.style.height = Math.random() * 8 + 4 + 'px';
             confetti.style.animationDelay = Math.random() * 0.5 + 's';
             document.body.appendChild(confetti);
-            
-            setTimeout(() => {
-                confetti.remove();
-            }, 3000);
+            setTimeout(() => confetti.remove(), 3000);
         }
     }
 
     function saveToLocalStorage() {
-        const data = {
-            sisaPertanyaan: sisaPertanyaan,
-            jawabanLea: jawabanLea
-        };
-        localStorage.setItem('leaQuizData', JSON.stringify(data));
+        localStorage.setItem('leaQuizData', JSON.stringify({
+            sisaPertanyaan,
+            jawabanLea
+        }));
     }
 
     function loadFromLocalStorage() {
         const saved = localStorage.getItem('leaQuizData');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                sisaPertanyaan = data.sisaPertanyaan;
-                jawabanLea = data.jawabanLea;
-                return true;
-            } catch(e) {
-                return false;
-            }
+        if (!saved) return false;
+        try {
+            const data = JSON.parse(saved);
+            sisaPertanyaan = data.sisaPertanyaan;
+            jawabanLea = data.jawabanLea;
+            return true;
+        } catch {
+            return false;
         }
-        return false;
     }
 
     function resetQuiz() {
@@ -539,163 +531,107 @@
         localStorage.removeItem('leaQuizData');
         updateResultDisplay();
         renderCurrentQuestion();
-        
-        // show cute message
-        const msg = document.createElement('div');
-        msg.style.position = 'fixed';
-        msg.style.bottom = '20px';
-        msg.style.right = '20px';
-        msg.style.background = '#f3b462';
-        msg.style.color = 'white';
-        msg.style.padding = '10px 20px';
-        msg.style.borderRadius = '40px';
-        msg.style.fontSize = '14px';
-        msg.style.zIndex = '1000';
-        msg.style.animation = 'slideUp 0.3s ease-out';
-        msg.innerHTML = '✨ mulai dari awal lagi! ✨';
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 2000);
     }
 
     function updateResultDisplay() {
         const entries = Object.entries(jawabanLea);
         if (entries.length === 0) {
-            resultListDiv.innerHTML = '<div class="empty-message">💭 kamu belum jawab nih, saat udah jawab nanti bakal muncul dibawahhh!!~</div>';
+            resultListDiv.innerHTML = '<div class="empty-message">💭 kamu belum jawab nih, nanti muncul di sini yaa ✨</div>';
             return;
         }
 
-        let html = '';
-        for (let [pertanyaan, jawaban] of entries) {
-            html += `
-                <div class="result-item">
-                    <div class="result-q">📌 ${escapeHtml(pertanyaan)}</div>
-                    <div class="result-a">💬 ${escapeHtml(jawaban)}</div>
-                </div>
-            `;
-        }
-        resultListDiv.innerHTML = html;
+        resultListDiv.innerHTML = entries.map(([q,a]) => `
+            <div class="result-item">
+                <div class="result-q">📌 ${escapeHtml(q)}</div>
+                <div class="result-a">💬 ${escapeHtml(a)}</div>
+            </div>
+        `).join('');
     }
 
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, m =>
+            m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'
+        );
+    }
+
+    // ✅ FITUR BARU: kirim email
+    function kirimEmail() {
+        let hasil = "Jawaban Lea:\n\n";
+        for (let [q, a] of Object.entries(jawabanLea)) {
+            hasil += `• ${q}\n👉 ${a}\n\n`;
+        }
+
+        const email = "pasyaputranto12@gmail.com";
+        const subject = "Jawaban Lea 💌";
+
+        window.location.href =
+            `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(hasil)}`;
     }
 
     function renderCurrentQuestion() {
         if (sisaPertanyaan.length === 0) {
             dynamicContainer.innerHTML = `
-                <div class="question-box" style="background:#eef6f0; border-left-color:#8fbc8f; animation: none;">
-                    <div class="pasya-label" style="animation: none;">✨ Pasya ✨</div>
+                <div class="question-box" style="background:#eef6f0;">
                     <div class="question-text">
-                        makasih Lea udah jawab semua pertanyaan dari aku! 💖<br>
-                        <span style="font-size: 1.1rem; display: inline-block; animation: wave 1s infinite;">🎉</span>
-                        kamu hebat! <span style="display: inline-block; animation: heartbeat 0.8s infinite;">❤️</span>
+                        makasih Lea udah jawab semuanya 💖
                     </div>
                 </div>
-                <div class="counter-info" style="margin-top:8px;">✅ semua pertanyaan selesai! lihat jawaban di bawah ya</div>
             `;
+
             createConfetti();
+
+            // ✅ AUTO EMAIL
+            setTimeout(() => {
+                kirimEmail();
+            }, 1500);
+
             return;
         }
 
-        const randomIndex = Math.floor(Math.random() * sisaPertanyaan.length);
-        const currentQ = sisaPertanyaan[randomIndex];
-        const currentIndex = randomIndex;
+        const index = Math.floor(Math.random() * sisaPertanyaan.length);
+        const q = sisaPertanyaan[index];
 
         dynamicContainer.innerHTML = `
             <div class="question-box">
-                <div class="pasya-label">🐱 Pasya nanya nih <span class="typing-indicator">✍️</span></div>
-                <div class="question-text">${escapeHtml(currentQ)}</div>
+                <div class="question-text">${escapeHtml(q)}</div>
             </div>
-            <div class="answer-area">
-                <label class="lea-label">💌 Lea jawab :</label>
-                <input type="text" id="jawabanInput" placeholder="ketik jawabanmu di sini..." autocomplete="off">
-            </div>
-            <button id="submitBtn">
-                <span>kirim jawaban</span> 
-                <span style="display: inline-block; animation: wave 1s infinite;">➤</span>
-            </button>
-            <div class="counter-info">
-                💬 tersisa ${sisaPertanyaan.length} pertanyaan lagi
-                ${sisaPertanyaan.length <= 2 ? '✨ semangat! ✨' : ''}
-            </div>
+            <input id="jawabanInput" placeholder="jawab di sini...">
+            <button id="submitBtn">kirim</button>
         `;
 
-        const submitBtn = document.getElementById('submitBtn');
-        const inputField = document.getElementById('jawabanInput');
+        const input = document.getElementById('jawabanInput');
+        const btn = document.getElementById('submitBtn');
 
-        function handleAnswer() {
-            let jawaban = inputField.value.trim();
-            if (jawaban === "") {
-                // cute shake animation for empty answer
-                inputField.style.animation = 'shake 0.3s ease-in-out';
-                setTimeout(() => {
-                    inputField.style.animation = '';
-                }, 300);
-                alert("tulis dulu ya jawabannya 😊 biar Pasya bisa kenal lebih dekat sama Lea");
-                return;
-            }
+        function submit() {
+            const val = input.value.trim();
+            if (!val) return alert("isi dulu ya 😊");
 
-            // add checkmark animation
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '✅ tersimpan!';
-            submitBtn.style.transform = 'scale(0.95)';
-            
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.style.transform = '';
-            }, 500);
+            jawabanLea[q] = val;
+            sisaPertanyaan.splice(index, 1);
 
-            jawabanLea[currentQ] = jawaban;
-            sisaPertanyaan.splice(currentIndex, 1);
             saveToLocalStorage();
             updateResultDisplay();
             renderCurrentQuestion();
-            
-            // scroll to top of chat area for new question
-            document.querySelector('.chat-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        submitBtn.addEventListener('click', handleAnswer);
-        inputField.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleAnswer();
-            }
+        btn.onclick = submit;
+        input.addEventListener("keypress", e => {
+            if (e.key === "Enter") submit();
         });
-        inputField.focus();
     }
 
-    // add shake animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // init
     createBubbles();
-    
-    const loaded = loadFromLocalStorage();
-    if (!loaded || (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === 0)) {
+
+    if (!loadFromLocalStorage()) {
         resetQuiz();
     } else {
         updateResultDisplay();
         renderCurrentQuestion();
     }
 
-    document.getElementById('resetBtn').addEventListener('click', function() {
-        if (confirm('Yakin mau mulai ulang? Jawaban yang udah diketik akan hilang 😢')) {
-            resetQuiz();
-        }
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        if (confirm('Yakin mau mulai ulang?')) resetQuiz();
     });
 </script>
 </body>
