@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pertanyaan buat lea ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #fdf8f0 0%, #f9f0e3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', sans-serif;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* floating bubbles animation */
+        .bubble {
+            position: fixed;
+            background: rgba(255, 200, 150, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatUp 8s infinite ease-in;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* main card */
+        .card {
+            max-width: 680px;
+            width: 100%;
+            background: #fffef7;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(253, 216, 153, 0.3);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* hero section with waving animation */
+        .hero {
+            background: linear-gradient(135deg, #ffe6c7 0%, #ffddb5 100%);
+            padding: 1.8rem 2rem 1.2rem;
+            text-align: center;
+            border-bottom: 2px solid #ffd29b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '🌸';
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.1;
+            bottom: -20px;
+            left: -20px;
+            animation: spinSlow 20s linear infinite;
+        }
+
+        .hero::after {
+            content: '🌼';
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.1;
+            top: -10px;
+            right: -15px;
+            animation: spinSlow 15s linear infinite reverse;
+        }
+
+        @keyframes spinSlow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hero h1 {
+            font-size: 1.9rem;
+            color: #b45f2b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .wave-emoji {
+            display: inline-block;
+            animation: wave 1.5s infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(14deg); }
+            40% { transform: rotate(-8deg); }
+            60% { transform: rotate(14deg); }
+            80% { transform: rotate(-4deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .heart-beat {
+            display: inline-block;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .hero p {
+            color: #a5713c;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .chat-area {
+            padding: 2rem 2rem 1.5rem;
+        }
+
+        /* animated question box */
+        .question-box {
+            background: #fef3e4;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.8rem;
+            border-left: 6px solid #f3b462;
+            animation: pulseGlow 2s ease-in-out infinite;
+            transition: all 0.3s;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(243, 180, 98, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(243, 180, 98, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(243, 180, 98, 0);
+            }
+        }
+
+        .pasya-label {
+            font-weight: 700;
+            color: #c17b3a;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            background: #ffe0bc;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: #2c221b;
+            line-height: 1.4;
+        }
+
+        .answer-area {
+            margin-top: 0.5rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .lea-label {
+            font-weight: 600;
+            color: #6d8f7f;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        /* animated input */
+        input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            border: 1.5px solid #ffe0bf;
+            border-radius: 60px;
+            background: white;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #f3b462;
+            box-shadow: 0 0 0 3px rgba(243, 180, 98, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* animated button */
+        button {
+            background: linear-gradient(135deg, #e7b17e 0%, #d49c63 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: scale(0.98);
+            box-shadow: 0 5px 15px rgba(212, 156, 99, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            border-top: 2px dashed #f7e2ca;
+            padding: 1.8rem 2rem 2rem;
+            background: #fffbf5;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #b45f2b;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-list {
+            background: #fff4e8;
+            border-radius: 1.5rem;
+            padding: 0.2rem;
+        }
+
+        /* animated result items */
+        .result-item {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #ffebd2;
+            animation: fadeInLeft 0.5s ease-out;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            background: #fff0e0;
+            transform: translateX(5px);
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-q {
+            font-weight: 700;
+            color: #af6d3a;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-a {
+            color: #2c4a3e;
+            font-size: 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid #f3b462;
+            margin-top: 4px;
+            word-break: break-word;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #b89a7a;
+            padding: 1rem;
+            font-style: italic;
+        }
+
+        .counter-info {
+            font-size: 0.85rem;
+            text-align: center;
+            background: #fcf3e8;
+            padding: 0.4rem;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+            color: #8b694a;
+            animation: fadeInUp 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 1rem;
+            color: #c8aa87;
+            border-top: 1px solid #ffe6d0;
+        }
+
+        .reset-btn {
+            background: #d9c2a8;
+            margin-top: 1rem;
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            display: inline-block;
+            background: linear-gradient(135deg, #d9c2a8 0%, #c8aa87 100%);
+        }
+
+        .button-wrapper {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* loading animation */
+        .typing-indicator {
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* celebration confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f3b462;
+            position: absolute;
+            animation: fall 3s linear forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- floating bubbles -->
+<div id="bubbles"></div>
+
+<div class="card">
+    <div class="hero">
+        <h1>
+            <span class="wave-emoji">👋</span>
+            untuk Lea 
+            <span class="heart-beat">❤️</span>
+        </h1>
+        <p>aku udah siapin beberapa pertanyaan yaa buat dijawabbb ✨</p>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div id="dynamicContent"></div>
+    </div>
+
+    <div class="result-section" id="resultSection">
+        <div class="result-title">🌸 jawaban dari Lea 🌸</div>
+        <div id="resultList" class="result-list">
+            <div class="empty-message">kamu belum jawab lea, jadi harus jawab dulu😺~</div>
+        </div>
+        <div class="button-wrapper">
+            <button id="resetBtn" class="reset-btn">↻ mulai ulang</button>
+        </div>
+    </div>
+    <footer>buat kamu · dari Pasya <span class="heart-beat">💖</span></footer>
+</div>
+
+<script>
+    const pertanyaanOri = [
+        "kalau lagi capek biasanya kamu ngapain biar balik enak lagi?",
+        "kamu lebih suka suasana yang rame atau yang tenang gitu?",
+        "kamu tipe yang butuh me time ga sih?",
+        "kalau lagi banyak pikiran, kamu biasanya cerita ke orang atau dipendem sendiri?",
+        "hal kecil apa sih yang bisa bikin mood kamu langsung bagus?",
+        "kamu orangnya gampang overthinking ga?"
+    ];
+
+    let sisaPertanyaan = [];
+    let jawabanLea = {};
+
+    const dynamicContainer = document.getElementById('dynamicContent');
+    const resultListDiv = document.getElementById('resultList');
+
+    // create floating bubbles
+    function createBubbles() {
+        const bubblesDiv = document.getElementById('bubbles');
+        for (let i = 0; i < 20; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 60 + 20;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.animationDelay = Math.random() * 8 + 's';
+            bubble.style.animationDuration = Math.random() * 5 + 6 + 's';
+            bubblesDiv.appendChild(bubble);
+        }
+    }
+
+    // create confetti effect
+    function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = `hsl(${Math.random() * 60 + 20}, 70%, 60%)`;
+            confetti.style.width = Math.random() * 8 + 4 + 'px';
+            confetti.style.height = Math.random() * 8 + 4 + 'px';
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
+        }
+    }
+
+    function saveToLocalStorage() {
+        const data = {
+            sisaPertanyaan: sisaPertanyaan,
+            jawabanLea: jawabanLea
+        };
+        localStorage.setItem('leaQuizData', JSON.stringify(data));
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('leaQuizData');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                sisaPertanyaan = data.sisaPertanyaan;
+                jawabanLea = data.jawabanLea;
+                return true;
+            } catch(e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    function resetQuiz() {
+        sisaPertanyaan = [...pertanyaanOri];
+        jawabanLea = {};
+        localStorage.removeItem('leaQuizData');
+        updateResultDisplay();
+        renderCurrentQuestion();
+        
+        // show cute message
+        const msg = document.createElement('div');
+        msg.style.position = 'fixed';
+        msg.style.bottom = '20px';
+        msg.style.right = '20px';
+        msg.style.background = '#f3b462';
+        msg.style.color = 'white';
+        msg.style.padding = '10px 20px';
+        msg.style.borderRadius = '40px';
+        msg.style.fontSize = '14px';
+        msg.style.zIndex = '1000';
+        msg.style.animation = 'slideUp 0.3s ease-out';
+        msg.innerHTML = '✨ mulai dari awal lagi! ✨';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2000);
+    }
+
+    function updateResultDisplay() {
+        const entries = Object.entries(jawabanLea);
+        if (entries.length === 0) {
+            resultListDiv.innerHTML = '<div class="empty-message">💭 kamu belum jawab nih, saat udah jawab nanti bakal muncul dibawahhh!!~</div>';
+            return;
+        }
+
+        let html = '';
+        for (let [pertanyaan, jawaban] of entries) {
+            html += `
+                <div class="result-item">
+                    <div class="result-q">📌 ${escapeHtml(pertanyaan)}</div>
+                    <div class="result-a">💬 ${escapeHtml(jawaban)}</div>
+                </div>
+            `;
+        }
+        resultListDiv.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderCurrentQuestion() {
+        if (sisaPertanyaan.length === 0) {
+            dynamicContainer.innerHTML = `
+                <div class="question-box" style="background:#eef6f0; border-left-color:#8fbc8f; animation: none;">
+                    <div class="pasya-label" style="animation: none;">✨ Pasya ✨</div>
+                    <div class="question-text">
+                        makasih Lea udah jawab semua pertanyaan dari aku! 💖<br>
+                        <span style="font-size: 1.1rem; display: inline-block; animation: wave 1s infinite;">🎉</span>
+                        kamu hebat! <span style="display: inline-block; animation: heartbeat 0.8s infinite;">❤️</span>
+                    </div>
+                </div>
+                <div class="counter-info" style="margin-top:8px;">✅ semua pertanyaan selesai! lihat jawaban di bawah ya</div>
+            `;
+            createConfetti();
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * sisaPertanyaan.length);
+        const currentQ = sisaPertanyaan[randomIndex];
+        const currentIndex = randomIndex;
+
+        dynamicContainer.innerHTML = `
+            <div class="question-box">
+                <div class="pasya-label">🐱 Pasya nanya nih <span class="typing-indicator">✍️</span></div>
+                <div class="question-text">${escapeHtml(currentQ)}</div>
+            </div>
+            <div class="answer-area">
+                <label class="lea-label">💌 Lea jawab :</label>
+                <input type="text" id="jawabanInput" placeholder="ketik jawabanmu di sini..." autocomplete="off">
+            </div>
+            <button id="submitBtn">
+                <span>kirim jawaban</span> 
+                <span style="display: inline-block; animation: wave 1s infinite;">➤</span>
+            </button>
+            <div class="counter-info">
+                💬 tersisa ${sisaPertanyaan.length} pertanyaan lagi
+                ${sisaPertanyaan.length <= 2 ? '✨ semangat! ✨' : ''}
+            </div>
+        `;
+
+        const submitBtn = document.getElementById('submitBtn');
+        const inputField = document.getElementById('jawabanInput');
+
+        function handleAnswer() {
+            let jawaban = inputField.value.trim();
+            if (jawaban === "") {
+                // cute shake animation for empty answer
+                inputField.style.animation = 'shake 0.3s ease-in-out';
+                setTimeout(() => {
+                    inputField.style.animation = '';
+                }, 300);
+                alert("tulis dulu ya jawabannya 😊 biar Pasya bisa kenal lebih dekat sama Lea");
+                return;
+            }
+
+            // add checkmark animation
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '✅ tersimpan!';
+            submitBtn.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.transform = '';
+            }, 500);
+
+            jawabanLea[currentQ] = jawaban;
+            sisaPertanyaan.splice(currentIndex, 1);
+            saveToLocalStorage();
+            updateResultDisplay();
+            renderCurrentQuestion();
+            
+            // scroll to top of chat area for new question
+            document.querySelector('.chat-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        submitBtn.addEventListener('click', handleAnswer);
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleAnswer();
+            }
+        });
+        inputField.focus();
+    }
+
+    // add shake animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // init
+    createBubbles();
+    
+    const loaded = loadFromLocalStorage();
+    if (!loaded || (sisaPertanyaan.length === 0 && Object.keys(jawabanLea).length === 0)) {
+        resetQuiz();
+    } else {
+        updateResultDisplay();
+        renderCurrentQuestion();
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        if (confirm('Yakin mau mulai ulang? Jawaban yang udah diketik akan hilang 😢')) {
+            resetQuiz();
+        }
+    });
+</script>
+</body>
+</html>
